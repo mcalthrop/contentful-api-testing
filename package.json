@@ -1,0 +1,17 @@
+{
+    "name": "contentful-api-testing",
+    "version": "0.0.1",
+    "description": "Client for Contentful's Content Delivery API",
+    "main": "contentful-cms-master.js",
+    "dependencies": {
+        "log": "~1.4.0",
+        "contentful": "~0.0.13"
+    },
+    "devDependencies": {},
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/mcalthrop/contentful-api-testing"
+    },
+    "author": "Matt Calthrop",
+    "license": "BSD"
+}
