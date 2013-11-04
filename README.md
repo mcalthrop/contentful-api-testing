@@ -11,3 +11,7 @@ Clone/fork this project, then:
 npm install
 node api-test.js
 ```
+
+## Issues
+
+It doesn't work yet. Oops. Working on that now...
