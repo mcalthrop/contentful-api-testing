@@ -2,7 +2,7 @@
 
 (function () {
 
-    var contentful = require('contentful'),
+    var contentfulManagement = require('contentful-management'),
         log = require('log'),
         protocol = 'http',
         cdnHost = 'cdn.contentful.com',
@@ -16,13 +16,13 @@
             }
         };
 
-    source.client = contentful.createClient({
+    source.client = contentfulManagement.createClient({
         accessToken: source.config.accessToken,
-        space: source.config.spaceId
+        secure: false
     });
     console.log(source.client);
 
-    source.space = source.client.space().then(log.ok, log.fail);
+    source.space = source.client.getSpace().then(log.ok, log.fail);
     console.log(source.space);
 
     source.contentTypes = source.client.contentTypes().then(log.ok, log.fail);
