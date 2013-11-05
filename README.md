@@ -9,8 +9,8 @@ Clone/fork this project, then:
 
 ```
 npm install
-node api-test.js    # for the NodeJS test script
-./api-test.bash     # for the `curl` test script
+node api-testing.js    # for the NodeJS testing script
+./api-testing.bash     # for the `curl` testing script
 ```
 
 ## Issues
