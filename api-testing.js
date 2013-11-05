@@ -10,7 +10,7 @@
             config: {
                 protocol: protocol,
                 host: cdnHost,
-                spaceName: 'cms-master',
+                spaceName: 'REPLACE_WITH_VALID_SPACE_NAME',
                 spaceId: 'REPLACE_WITH_VALID_SPACE_ID',
                 accessToken: 'REPLACE_WITH_VALID_ACCESS_TOKEN'
             }
