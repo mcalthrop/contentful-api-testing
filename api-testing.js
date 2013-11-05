@@ -11,7 +11,7 @@
                 protocol: protocol,
                 host: cdnHost,
                 spaceName: 'cms-master',
-                spaceId: 'e2h9ve8r21wy',
+                spaceId: 'REPLACE_WITH_VALID_SPACE_ID',
                 accessToken: 'REPLACE_WITH_VALID_ACCESS_TOKEN'
             }
         };
