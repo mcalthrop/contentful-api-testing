@@ -26,10 +26,8 @@
 
     var contentfulManagement = require('contentful-management'),
         log = console.log.bind(console),
-        protocol = 'http',
         source = {
             config: {
-                protocol: protocol,
                 host: getEnv('CONTENTFUL_MANAGEMENT_HOSTNAME', true),
                 spaceId: getEnv('CONTENTFUL_SPACE_ID', true),
                 accessToken: getEnv('CONTENTFUL_ACCESS_TOKEN', true)
