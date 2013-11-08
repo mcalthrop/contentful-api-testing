@@ -1,8 +1,6 @@
-#!/bin/bash
-
 # ------------------------------------------------------------------------------------------
 #
-# Sample bash script for setting up the environment before running api-testing.js.
+# Sample script for setting up the environment before running api-testing.js.
 #
 # Usage:
 #   Change the environment variables in this file to correct values, then run:
