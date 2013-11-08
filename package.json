@@ -4,7 +4,6 @@
     "description": "Testing Contentful's Content Delivery API",
     "main": "contentful-cms-master.js",
     "dependencies": {
-        "log": "~1.4.0",
         "contentful-management": "0.0.4"
     },
     "devDependencies": {},
