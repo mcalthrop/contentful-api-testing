@@ -11,6 +11,5 @@ Clone/fork this project, then:
 npm install
 vi env-setup.bash      # set required environment variables
 . env-setup.bash       # set the env variables
-node api-testing.js    # for the NodeJS testing script
-./api-testing.bash     # for the `curl` testing script
+node api-testing.js    # run the NodeJS testing script
 ```
