@@ -1,4 +1,4 @@
-/*global require */
+/*global require, process */
 
 // Testing the Contentful API with Javascript.
 
