@@ -13,7 +13,3 @@ vi env-setup.bash      # set required environment variables
 node api-testing.js    # for the NodeJS testing script
 ./api-testing.bash     # for the `curl` testing script
 ```
-
-## Issues
-
-The NodeJS script doesn't work yet. Oops. Working on that now...
