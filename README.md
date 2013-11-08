@@ -9,7 +9,7 @@ Clone/fork this project, then:
 
 ```
 npm install
-vi env-setup.bash      # set required environment variables
-. env-setup.bash       # set the env variables
+vi env-setup.bash      # store required environment variables in setup script
+. env-setup.bash       # set the environment variables in your current shell
 node api-testing.js    # run the NodeJS testing script
 ```
