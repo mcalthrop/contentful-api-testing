@@ -11,11 +11,12 @@
  */
 
 var contentfulManagement = require('contentful-management'),
-    data = {};
+    data = {contentTypeMapping: {}};
 
-function execute(log, config, contentTypes, onComplete) {
+function execute(log, config, contentTypes, entries, onComplete) {
     data.log = log;
     data.config = config;
+    data.entries = entries;
     data.contentTypes = contentTypes;
     data.onComplete = onComplete;
 
@@ -53,7 +54,6 @@ function handleSpace(space) {
     for (var i = 0, len = contentTypes.length; i < len; i++) {
         var srcContentType = contentTypes[i],
             destContentType = {
-                sys: {id: srcContentType.sys.id},
                 fields: srcContentType.fields,
                 name: srcContentType.name,
                 description: srcContentType.description,
@@ -63,19 +63,31 @@ function handleSpace(space) {
         data.log('Creating content type:', destContentType.name);
 
         data.space.createContentType(destContentType).then(
-            handleContentTypeCreated,
+            function (contentType) {
+                var srcContentTypeId = srcContentType.sys.id,
+                    destContentTypeId = contentType.sys.id;
+
+                data.log('Destination content type created OK:', destContentTypeId, contentType.name, contentType.fields);
+                data.log('Mapping dest to src content type id:', destContentTypeId, '<', srcContentTypeId);
+
+                // store the content type id so it can be mapped later when creating entries
+                data.contentTypeMapping[destContentTypeId] = srcContentTypeId;
+
+                handleContentTypeCreated(contentType);
+            },
             function (error) {
                 data.log('Destination createContentType ' + destContentType.name + ' ERROR:', error);
             }
         );
+
+        // TODO: remove once the bug below is fixed
+        return;
     }
 
     data.onComplete();
 }
 
 function handleContentTypeCreated(contentType) {
-    data.log('Destination content type created OK:', contentType.name);
-
     data.space.publishContentType(contentType).then(
         handleContentTypePublished,
         function (error) {
@@ -85,7 +97,79 @@ function handleContentTypeCreated(contentType) {
 }
 
 function handleContentTypePublished(contentType) {
-    data.log('Destination content type published OK:', contentType.name);
+    data.log('Destination content type published OK:', contentType.sys.id);
+
+    createEntries(contentType);
+}
+
+function createEntries(contentType) {
+    var entries = data.entries,
+        createdDestContentTypeId = contentType.sys.id;
+
+    data.log('Creating entries for content type:', createdDestContentTypeId, contentType.name);
+
+    for (var i = 0, len = entries.length; i < len; i++) {
+        var srcEntry = entries[i],
+            srcContentTypeId = srcEntry.sys.contentType.sys.id;
+
+        if (srcContentTypeId == data.contentTypeMapping[createdDestContentTypeId]) {
+            var destEntry = {
+                fields: srcEntry.fields
+            };
+
+            data.log('Source entry to duplicate:', srcEntry);
+
+            createEntry(createdDestContentTypeId, destEntry);
+        }
+    }
+}
+
+function createEntry(contentTypeId, entry) {
+    data.log("Creating destination entry:", contentTypeId, entry);
+
+    data.space.createEntry(contentTypeId).then(
+        handleCreateEntry,
+        function (error) {
+            data.log('Destination createEntry ' + contentTypeId + ' ' + entry.sys.id + ' ERROR:', error);
+        }
+    )
+}
+
+function handleCreateEntry(entry) {
+    var entryId = entry.sys.id,
+        contentTypeId = entry.sys.contentType.sys.id;
+
+    data.log('Destination createEntry OK:', contentTypeId, entry);
+
+    if (entry.fields === undefined) {
+        // TODO: currently, this always breaks - need to find out why
+        throw new Error('"fields" property of entry should be defined on created entry');
+    }
+
+    data.space.getEntry(entryId).then(
+        handleGetEntry,
+        function (error) {
+            data.log('Destination getEntry ' + entryId + ' ERROR:', error);
+        }
+    )
+}
+
+function handleGetEntry(entry) {
+    var entryId = entry.sys.id,
+        contentTypeId = entry.sys.contentType.sys.id;
+
+    data.log('Destination getEntry OK:', contentTypeId, entry);
+
+    data.space.publishEntry(entry).then(
+        handlePublishEntry,
+        function (error) {
+            data.log('Destination publishEntry ' + entryId + ' ERROR:', error);
+        }
+    )
+}
+
+function handlePublishEntry(entry) {
+    data.log('Destination publishEntry OK:', entry.sys.id);
 }
 
 module.exports = execute;

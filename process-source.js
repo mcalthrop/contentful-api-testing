@@ -35,8 +35,8 @@ function createClient() {
 function getSpace(onFulfilled) {
     data.client.getSpace(data.config.spaceId).then(
         onFulfilled,
-        function () {
-            data.log('Client getSpace ERROR:', arguments);
+        function (error) {
+            data.log('Client getSpace ERROR:', error);
         }
     );
 }
@@ -48,16 +48,29 @@ function handleSpace(space) {
 
     space.getContentTypes().then(
         handleContentTypes,
-        function () {
-            data.log('Source getContentTypes ERROR:', arguments);
+        function (error) {
+            data.log('Source getContentTypes ERROR:', error);
         }
-    )
+    );
 }
 
 function handleContentTypes(contentTypes) {
     data.log('Source getContentTypes OK:', contentTypes.length);
 
-    data.onComplete(contentTypes);
+    data.contentTypes = contentTypes;
+
+    data.space.getEntries().then(
+        handleEntries,
+        function (error) {
+            data.log('Source getEntries ERROR:', error);
+        }
+    );
+}
+
+function handleEntries(entries) {
+    data.log('Source getContentTypes OK:', entries.length);
+
+    data.onComplete(data.contentTypes, entries);
 }
 
 module.exports = execute;
