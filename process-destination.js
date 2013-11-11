@@ -64,20 +64,21 @@ function handleSpace(space) {
 
         data.log('  Creating content type:', i, destContentType.name);
 
-        // DEBUG stuff
+        // TODO: remove
+        // BEGIN DEBUG stuff
         data.log('  --- src  : ', srcContentType);
         data.log('  --- dest :', destContentType);
+        // END DEBUG stuff
 
         data.space.createContentType(destContentType).then(
             handleCreateContentType,
-            function () {
-                data.log('Destination createContentType ' + destContentType.name + ' ERROR:', arguments);
-                throw new Error('Could not create content type:', destContentType.name);
+            function (error) {
+                data.log('Destination createContentType ' + destContentType.name + ' ERROR:', error);
             }
         );
 
         // TODO: remove this once I've got the script working:
-        throw new Error('STOPPING HERE');
+        return;
     }
 
     data.onComplete();
