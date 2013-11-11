@@ -60,7 +60,7 @@ function handleSpace(space) {
                 displayField: srcContentType.displayField
             };
 
-        data.log('Creating content type:', i, destContentType.name);
+        data.log('Creating content type:', destContentType.name);
 
         data.space.createContentType(destContentType).then(
             handleContentTypeCreated,
