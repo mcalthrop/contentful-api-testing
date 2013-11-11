@@ -9,12 +9,12 @@
 # ------------------------------------------------------------------------------------------
 
 export SRC_CONTENTFUL_MANAGEMENT_HOSTNAME=cdn.contentful.com
-export SRC_CONTENTFUL_SECURE=false
+export SRC_CONTENTFUL_SECURE=true
 export SRC_CONTENTFUL_SPACE_ID=
 export SRC_CONTENTFUL_ACCESS_TOKEN=
 
-export DEST_CONTENTFUL_MANAGEMENT_HOSTNAME=cdn.contentful.com
-export DEST_CONTENTFUL_SECURE=false
+export DEST_CONTENTFUL_MANAGEMENT_HOSTNAME=api.contentful.com
+export DEST_CONTENTFUL_SECURE=true
 export DEST_CONTENTFUL_SPACE_ID=
 export DEST_CONTENTFUL_ACCESS_TOKEN=
 

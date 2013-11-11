@@ -8,8 +8,6 @@
  *  - get the Space (should exist, and be empty)
  *  - create each of the Content Types that we have been passed in
  *  - call the onComplete() method
- *
- *  NOTE: incomplete! Creating content types on destination fails. WIP.
  */
 
 var contentfulManagement = require('contentful-management'),
@@ -62,30 +60,32 @@ function handleSpace(space) {
                 displayField: srcContentType.displayField
             };
 
-        data.log('  Creating content type:', i, destContentType.name);
-
-        // TODO: remove
-        // BEGIN DEBUG stuff
-        data.log('  --- src  :', srcContentType);
-        data.log('  --- dest :', destContentType);
-        // END DEBUG stuff
+        data.log('Creating content type:', i, destContentType.name);
 
         data.space.createContentType(destContentType).then(
-            handleCreateContentType,
+            handleContentTypeCreated,
             function (error) {
                 data.log('Destination createContentType ' + destContentType.name + ' ERROR:', error);
             }
         );
-
-        // TODO: remove this once I've got the script working:
-        return;
     }
 
     data.onComplete();
 }
 
-function handleCreateContentType(createdContentType) {
-    data.log('  Destination created content type OK:', createdContentType.name);
+function handleContentTypeCreated(contentType) {
+    data.log('Destination content type created OK:', contentType.name);
+
+    data.space.publishContentType(contentType).then(
+        handleContentTypePublished,
+        function (error) {
+            data.log('Destination publishContentType ' + contentType.name + ' ERROR:', error);
+        }
+    )
+}
+
+function handleContentTypePublished(contentType) {
+    data.log('Destination content type published OK:', contentType.name);
 }
 
 module.exports = execute;
