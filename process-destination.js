@@ -6,7 +6,12 @@
  * This script processes the destination:
  *  - create the client
  *  - get the Space (should exist, and be empty)
- *  - create each of the Content Types that we have been passed in
+ *  - for each Content Type passed in:
+ *    - create
+ *    - publish
+ *    - create related Entries
+ *    - read related Entries
+ *    - publish related Entries
  *  - call the onComplete() method
  */
 

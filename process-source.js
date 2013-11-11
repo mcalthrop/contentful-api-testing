@@ -7,7 +7,8 @@
  *  - create the client
  *  - get the Space (should exist, and contain all the Content Types to be transferred)
  *  - get a list of the Content Types
- *  - call the onComplete() method with the Content Types retrieved
+ *  - get a list of Entries
+ *  - call the onComplete() method with the Content Types and Entries retrieved
  */
 
 var contentfulManagement = require('contentful-management'),
