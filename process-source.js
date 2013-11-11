@@ -19,7 +19,7 @@ function execute(log, config, onComplete) {
     data.onComplete = onComplete;
 
     createClient();
-    getSpace();
+    getSpace(handleSpace);
 }
 
 function createClient() {
@@ -32,9 +32,9 @@ function createClient() {
     data.log('Source client:', data.client);
 }
 
-function getSpace() {
+function getSpace(onFulfilled) {
     data.client.getSpace(data.config.spaceId).then(
-        handleSpace,
+        onFulfilled,
         function () {
             data.log('Client getSpace ERROR:', arguments);
         }

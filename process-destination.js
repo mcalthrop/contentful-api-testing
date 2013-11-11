@@ -22,7 +22,7 @@ function execute(log, config, contentTypes, onComplete) {
     data.onComplete = onComplete;
 
     createClient();
-    getSpace();
+    getSpace(handleSpace);
 }
 
 function createClient() {
@@ -35,9 +35,9 @@ function createClient() {
     data.log('Destination client:', data.client);
 }
 
-function getSpace() {
+function getSpace(onFulfilled) {
     data.client.getSpace(data.config.spaceId).then(
-        handleSpace,
+        onFulfilled,
         function () {
             data.log('Destination getSpace ERROR:', arguments);
         }
@@ -56,17 +56,17 @@ function handleSpace(space) {
         var srcContentType = contentTypes[i],
             destContentType = {
                 sys: {id: srcContentType.sys.id},
+                fields: srcContentType.fields,
                 name: srcContentType.name,
                 description: srcContentType.description,
-                displayField: srcContentType.displayField,
-                fields: srcContentType.fields
+                displayField: srcContentType.displayField
             };
 
         data.log('  Creating content type:', i, destContentType.name);
 
         // TODO: remove
         // BEGIN DEBUG stuff
-        data.log('  --- src  : ', srcContentType);
+        data.log('  --- src  :', srcContentType);
         data.log('  --- dest :', destContentType);
         // END DEBUG stuff
 
