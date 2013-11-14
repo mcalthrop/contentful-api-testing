@@ -7,7 +7,7 @@ Testing the Javascript API from https://www.contentful.com/ with NodeJS.
 
 The `duplicate-contentful-space.js` script takes an existing Contentful Space, and duplicates all the Content Types into another existing Contentful Space.
 
-Note that *no content* is duplicated: only the Content Types are.
+Note that Entries **are** duplicated, as well as Content Types.
 
 Clone/fork this project, then:
 
@@ -41,3 +41,13 @@ Finally, run the NodeJS script:
 ``` sh
 node duplicate-contentful-space.js      # run the NodeJS script to duplicate the Space
 ```
+
+## Issues
+
+Script works up until creating the new entry: it returns success, but there is no data in the `fields` property (even though that data has been passed to the `createEntry()` method).
+
+This means that when the script tries to publish the new entry, it fails validation, because there is no data.
+
+I've even tried adding a step in to call `getEntry()` immediately after entry creation, but that makes no difference.
+
+WIP...

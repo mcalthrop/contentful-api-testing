@@ -6,16 +6,22 @@
  * This script processes the destination:
  *  - create the client
  *  - get the Space (should exist, and be empty)
- *  - create each of the Content Types that we have been passed in
+ *  - for each Content Type passed in:
+ *    - create
+ *    - publish
+ *    - create related Entries
+ *    - read related Entries
+ *    - publish related Entries
  *  - call the onComplete() method
  */
 
 var contentfulManagement = require('contentful-management'),
     data = {};
 
-function execute(log, config, contentTypes, onComplete) {
+function execute(log, config, contentTypes, entries, onComplete) {
     data.log = log;
     data.config = config;
+    data.entries = entries;
     data.contentTypes = contentTypes;
     data.onComplete = onComplete;
 
@@ -53,7 +59,9 @@ function handleSpace(space) {
     for (var i = 0, len = contentTypes.length; i < len; i++) {
         var srcContentType = contentTypes[i],
             destContentType = {
-                sys: {id: srcContentType.sys.id},
+                sys: {
+                    id: srcContentType.sys.id
+                },
                 fields: srcContentType.fields,
                 name: srcContentType.name,
                 description: srcContentType.description,
@@ -74,7 +82,9 @@ function handleSpace(space) {
 }
 
 function handleContentTypeCreated(contentType) {
-    data.log('Destination content type created OK:', contentType.name);
+    var contentTypeId = contentType.sys.id;
+
+    data.log('Destination content type created OK:', contentTypeId, contentType.name);
 
     data.space.publishContentType(contentType).then(
         handleContentTypePublished,
@@ -85,7 +95,67 @@ function handleContentTypeCreated(contentType) {
 }
 
 function handleContentTypePublished(contentType) {
-    data.log('Destination content type published OK:', contentType.name);
+    data.log('Destination content type published OK:', contentType.sys.id);
+
+    createEntries(contentType);
+}
+
+function createEntries(contentType) {
+    var entries = data.entries,
+        createdDestContentTypeId = contentType.sys.id;
+
+    data.log('Creating entries for content type:', createdDestContentTypeId, contentType.name);
+
+    for (var i = 0, len = entries.length; i < len; i++) {
+        var srcEntry = entries[i],
+            srcContentTypeId = srcEntry.sys.contentType.sys.id;
+
+        if (srcContentTypeId === createdDestContentTypeId) {
+            var destEntry = {
+                sys: {
+                    id: srcEntry.sys.id
+                },
+                fields: srcEntry.fields
+            };
+
+            data.log('Source entry to duplicate:', srcContentTypeId, srcEntry);
+
+            createEntry(createdDestContentTypeId, destEntry);
+        }
+    }
+}
+
+function createEntry(contentTypeId, entry) {
+    var entryId = entry.sys.id;
+
+    data.log("Creating destination entry:", contentTypeId, entryId);
+
+    data.space.createEntry(contentTypeId, entry).then(
+        handleCreateEntry,
+        function (error) {
+            data.log('Destination createEntry ' + contentTypeId + ' ' + entryId + ' ERROR:', error);
+        }
+    )
+}
+
+function handleCreateEntry(entry) {
+    var entryId = entry.sys.id,
+        contentTypeId = entry.sys.contentType.sys.id;
+
+    data.log('Destination createEntry OK:', contentTypeId, entryId);
+
+    data.space.publishEntry(entry).then(
+        handlePublishEntry,
+        function (error) {
+            data.log('Destination publishEntry ' + entryId + ' ERROR:', error);
+        }
+    )
+}
+
+function handlePublishEntry(entry) {
+    var entryId = entry.sys.id;
+
+    data.log('Destination publishEntry OK:', entryId);
 }
 
 module.exports = execute;

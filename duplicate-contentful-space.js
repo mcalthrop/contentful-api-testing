@@ -25,8 +25,9 @@
         },
         log = console.log.bind(console);
 
-    processSource(log, sourceConfig, function (contentTypes) {
-        processDestination(log, destinationConfig, contentTypes, function () {
+    log('\n\n\n--------------------------------------------------------------------------------------');
+    processSource(log, sourceConfig, function (contentTypes, entries) {
+        processDestination(log, destinationConfig, contentTypes, entries, function () {
             log("Space duplication complete.");
         });
     })

@@ -7,7 +7,8 @@
  *  - create the client
  *  - get the Space (should exist, and contain all the Content Types to be transferred)
  *  - get a list of the Content Types
- *  - call the onComplete() method with the Content Types retrieved
+ *  - get a list of Entries
+ *  - call the onComplete() method with the Content Types and Entries retrieved
  */
 
 var contentfulManagement = require('contentful-management'),
@@ -35,8 +36,8 @@ function createClient() {
 function getSpace(onFulfilled) {
     data.client.getSpace(data.config.spaceId).then(
         onFulfilled,
-        function () {
-            data.log('Client getSpace ERROR:', arguments);
+        function (error) {
+            data.log('Client getSpace ERROR:', error);
         }
     );
 }
@@ -48,16 +49,29 @@ function handleSpace(space) {
 
     space.getContentTypes().then(
         handleContentTypes,
-        function () {
-            data.log('Source getContentTypes ERROR:', arguments);
+        function (error) {
+            data.log('Source getContentTypes ERROR:', error);
         }
-    )
+    );
 }
 
 function handleContentTypes(contentTypes) {
     data.log('Source getContentTypes OK:', contentTypes.length);
 
-    data.onComplete(contentTypes);
+    data.contentTypes = contentTypes;
+
+    data.space.getEntries().then(
+        handleEntries,
+        function (error) {
+            data.log('Source getEntries ERROR:', error);
+        }
+    );
+}
+
+function handleEntries(entries) {
+    data.log('Source getEntries OK:', entries.length);
+
+    data.onComplete(data.contentTypes, entries);
 }
 
 module.exports = execute;
