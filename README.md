@@ -7,7 +7,10 @@ Testing the Javascript API from https://www.contentful.com/ with NodeJS.
 
 The `duplicate-contentful-space.js` script takes an existing Contentful Space, and duplicates all the Content Types into another existing Contentful Space.
 
-Note that Entries **are** duplicated, as well as Content Types.
+Note:
+
+- that Entries **are** duplicated, as well as Content Types
+- the script will only run successfully once: it will fail if it has already been run with the same source and destination Spaces &ndash; see [Pipeline](#pipeline)
 
 Clone/fork this project, then:
 
@@ -16,12 +19,11 @@ Clone/fork this project, then:
 Make sure you have two Spaces configured in Contentful:
 - source:
   - create the full set of content types you want
-  - create an access token (Content Delivery &gt; Create API Key), and make a note of it
   - make a note of the Space ID (Space Settings &gt; Key)
 
 - destination:
   - contains NO content types
-  - get an access token: easiest way is to browse to the [management API documentation](https://www.contentful.com/developers/documentation/content-management-api/), log in, and make a note of the resultant access token
+  - get a management API access token: easiest way is to browse to the [management API documentation](https://www.contentful.com/developers/documentation/content-management-api/), log in, and make a note of the resultant access token
   - make a note of the Space ID (Space Settings &gt; Key)
 
 ### Script configuration
@@ -42,12 +44,10 @@ Finally, run the NodeJS script:
 node duplicate-contentful-space.js      # run the NodeJS script to duplicate the Space
 ```
 
-## Issues
+## Pipeline
 
-Script works up until creating the new entry: it returns success, but there is no data in the `fields` property (even though that data has been passed to the `createEntry()` method).
+Next pieces of functionality to work on:
 
-This means that when the script tries to publish the new entry, it fails validation, because there is no data.
-
-I've even tried adding a step in to call `getEntry()` immediately after entry creation, but that makes no difference.
-
-WIP...
+- allow option of copying only Content Types, but not Entries (via env var)
+- when duplicating Content Types, check if they already exist before creating
+- ditto for Entries
