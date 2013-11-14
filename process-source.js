@@ -69,7 +69,7 @@ function handleContentTypes(contentTypes) {
 }
 
 function handleEntries(entries) {
-    data.log('Source getContentTypes OK:', entries.length);
+    data.log('Source getEntries OK:', entries.length);
 
     data.onComplete(data.contentTypes, entries);
 }
