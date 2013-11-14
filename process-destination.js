@@ -7,11 +7,13 @@
  *  - create the client
  *  - get the Space (should exist, and be empty)
  *  - for each Content Type passed in:
- *    - create
- *    - publish
- *    - create related Entries
- *    - read related Entries
- *    - publish related Entries
+ *    - check if it exists:
+ *      - if so, publish
+ *      - if not, create, then publish it
+ *      - for each Entry that has this Content Type:
+ *        - check if the Entry exists
+ *          - if so, publish it
+ *          - if not, create, then publish it
  *  - call the onComplete() method
  */
 
@@ -68,34 +70,67 @@ function handleSpace(space) {
                 displayField: srcContentType.displayField
             };
 
-        data.log('Creating content type:', destContentType.name);
-
-        data.space.createContentType(destContentType).then(
-            handleContentTypeCreated,
-            function (error) {
-                data.log('Destination createContentType ' + destContentType.name + ' ERROR:', error);
-            }
-        );
+        getContentType(destContentType);
     }
 
     data.onComplete();
 }
 
-function handleContentTypeCreated(contentType) {
+function getContentType(contentType) {
+    var contentTypeId = contentType.sys.id,
+        contentTypeName = contentType.name;
+
+    data.log('Destination get Content Type:', contentTypeId, contentTypeName);
+
+    data.space.getContentType(contentTypeId).then(
+        handleGetContentType,
+        function (error) {
+            // assume that the error is because the content type doesn't exist
+            createContentType(contentType);
+        }
+    )
+}
+
+function handleGetContentType(contentType) {
+    var contentTypeId = contentType.sys.id,
+        contentTypeName = contentType.name;
+
+    data.log('Destination Content Type already exists:', contentTypeId, contentTypeName);
+
+    createEntries(contentType);
+}
+
+function createContentType(contentType) {
+    var contentTypeId = contentType.sys.id,
+        contentTypeName = contentType.name;
+
+    data.log('Creating content type:', contentTypeId, contentTypeName);
+
+    data.space.createContentType(contentType).then(
+        handleCreateContentType,
+        function (error) {
+            data.log('Destination createContentType ' + contentTypeName + ' ERROR:', error);
+        }
+    );
+}
+
+function handleCreateContentType(contentType) {
     var contentTypeId = contentType.sys.id;
 
     data.log('Destination content type created OK:', contentTypeId, contentType.name);
 
     data.space.publishContentType(contentType).then(
-        handleContentTypePublished,
+        handlePublishContentType,
         function (error) {
             data.log('Destination publishContentType ' + contentType.name + ' ERROR:', error);
         }
     )
 }
 
-function handleContentTypePublished(contentType) {
-    data.log('Destination content type published OK:', contentType.sys.id);
+function handlePublishContentType(contentType) {
+    var contentTypeId = contentType.sys.id;
+
+    data.log('Destination content type published OK:', contentTypeId);
 
     createEntries(contentType);
 }
@@ -118,11 +153,34 @@ function createEntries(contentType) {
                 fields: srcEntry.fields
             };
 
-            data.log('Source entry to duplicate:', srcContentTypeId, srcEntry);
+            data.log('Source entry to duplicate:', srcContentTypeId, srcEntry.sys.id);
 
-            createEntry(createdDestContentTypeId, destEntry);
+            getEntry(destEntry, createdDestContentTypeId);
         }
     }
+}
+
+// Note: we only need the second parameter for when the entry has not been found
+function getEntry(entry, contentTypeId) {
+    var entryId = entry.sys.id;
+
+    data.log("Destination get Entry:", entryId);
+
+    data.space.getEntry(entryId).then(
+        handleGetEntry,
+        function (error) {
+            // Just assume that the error is that it has not been found
+            createEntry(contentTypeId, entry);
+        }
+    )
+}
+
+function handleGetEntry(entry) {
+    var entryId = entry.sys.id;
+
+    data.log('Destination Entry already exists:', entryId);
+
+    publishEntry(entry);
 }
 
 function createEntry(contentTypeId, entry) {
@@ -144,6 +202,15 @@ function handleCreateEntry(entry) {
 
     data.log('Destination createEntry OK:', contentTypeId, entryId);
 
+    publishEntry(entry);
+}
+
+function publishEntry(entry) {
+    var entryId = entry.sys.id,
+        contentTypeId = entry.sys.contentType.sys.id;
+
+    data.log('Publishing entry:', contentTypeId, entryId);
+
     data.space.publishEntry(entry).then(
         handlePublishEntry,
         function (error) {
@@ -153,9 +220,10 @@ function handleCreateEntry(entry) {
 }
 
 function handlePublishEntry(entry) {
-    var entryId = entry.sys.id;
+    var entryId = entry.sys.id,
+        contentTypeId = entry.sys.contentType.sys.id;
 
-    data.log('Destination publishEntry OK:', entryId);
+    data.log('Destination publishEntry OK:', contentTypeId, entryId);
 }
 
 module.exports = execute;

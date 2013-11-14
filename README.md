@@ -9,8 +9,8 @@ The `duplicate-contentful-space.js` script takes an existing Contentful Space, a
 
 Note:
 
-- that Entries **are** duplicated, as well as Content Types
-- the script will only run successfully once: it will fail if it has already been run with the same source and destination Spaces &ndash; see [Pipeline](#pipeline)
+- that Entries duplicated, as well as Content Types
+- the script will leave Content Types and Entries that have already been created
 
 Clone/fork this project, then:
 
@@ -23,6 +23,7 @@ Make sure you have two Spaces configured in Contentful:
 
 - destination:
   - contains NO content types
+  - has identical locales (Space Settings &gt; Locales)
   - get a management API access token: easiest way is to browse to the [management API documentation](https://www.contentful.com/developers/documentation/content-management-api/), log in, and make a note of the resultant access token
   - make a note of the Space ID (Space Settings &gt; Key)
 
@@ -46,8 +47,8 @@ node duplicate-contentful-space.js      # run the NodeJS script to duplicate the
 
 ## Pipeline
 
-Next pieces of functionality to work on:
+Next functionality to work on:
 
 - allow option of copying only Content Types, but not Entries (via env var)
-- when duplicating Content Types, check if they already exist before creating
-- ditto for Entries
+- allow option of creating Content Types, but not publishing &ndash; which will of course mean Entries cannot be created (via env var)
+- allow option of creating Entries, but not publishing (via env var)
